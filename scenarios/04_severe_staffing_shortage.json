@@ -1,0 +1,11 @@
+{
+  "scenario_id": "04_severe_staffing_shortage",
+  "name": "Severe Shift Staffing Deficit",
+  "description": "Multiple simultaneous nurse call-outs across Med-Surg and Telemetry causing severe nurse-to-patient ratio breaches.",
+  "nurse_callouts": 6,
+  "affected_units": ["MED_SURG", "TELEMETRY"],
+  "hics_expected_level": "ORANGE_DIVERT",
+  "key_bottlenecks": [
+    "BN_STAFFING_BREACH"
+  ]
+}

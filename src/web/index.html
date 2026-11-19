@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital Resource & Patient Flow Multi-Agent Command Center</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-icon">🏥</div>
+        <div>
+          <h1>MetroHealth Academic Medical Center</h1>
+          <p class="subtitle">Autonomous Multi-Agent Flow Optimization & Critical Care Orchestrator</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="hics-badge-container">
+          <span class="label">HICS Alert Status:</span>
+          <span id="hics-badge" class="badge badge-normal">NORMAL</span>
+        </div>
+        <div class="cycle-counter">Cycle: <span id="cycle-num">1</span></div>
+        <div class="action-buttons">
+          <button id="btn-step" class="btn btn-secondary">⚡ Run Agent Cycle</button>
+          <button id="btn-optimize" class="btn btn-primary">🚀 Apply AI Flow Optimizations</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Top KPI Bar -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Overall Bed Occupancy</span>
+          <span class="icon">🛏️</span>
+        </div>
+        <div class="kpi-value" id="kpi-overall-occ">--%</div>
+        <div class="kpi-subtext" id="kpi-overall-beds">-- / -- beds occupied</div>
+        <div class="progress-bar"><div id="prog-overall" class="progress-fill" style="width: 0%"></div></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Critical Care (ICU) Capacity</span>
+          <span class="icon">🫀</span>
+        </div>
+        <div class="kpi-value" id="kpi-icu-occ">--%</div>
+        <div class="kpi-subtext" id="kpi-icu-details">-- / -- beds | Step-Down Ready: <strong id="kpi-icu-ready">0</strong></div>
+        <div class="progress-bar"><div id="prog-icu" class="progress-fill fill-danger" style="width: 0%"></div></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>ED Boarding Queue</span>
+          <span class="icon">🚑</span>
+        </div>
+        <div class="kpi-value" id="kpi-ed-boarders">0</div>
+        <div class="kpi-subtext" id="kpi-ed-wait">Mean Boarding Wait: 0.0 hrs</div>
+        <div class="progress-bar"><div id="prog-ed" class="progress-fill fill-warning" style="width: 0%"></div></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Nurse Staffing Ratios</span>
+          <span class="icon">👩‍⚕️</span>
+        </div>
+        <div class="kpi-value" id="kpi-staff-status">COMPLIANT</div>
+        <div class="kpi-subtext" id="kpi-staff-details">Nurses on duty: -- | Avg Fatigue: --%</div>
+        <div class="progress-bar"><div id="prog-staff" class="progress-fill fill-success" style="width: 100%"></div></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Mechanical Ventilators</span>
+          <span class="icon">🫁</span>
+        </div>
+        <div class="kpi-value" id="kpi-vent-occ">--%</div>
+        <div class="kpi-subtext" id="kpi-vent-details">-- / 40 in use (Reserve: --)</div>
+        <div class="progress-bar"><div id="prog-vent" class="progress-fill" style="width: 0%"></div></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Clinical Data Completeness</span>
+          <span class="icon">🛡️</span>
+        </div>
+        <div class="kpi-value" id="kpi-data-comp">--%</div>
+        <div class="kpi-subtext" id="kpi-data-details">Conservative safety protocol active</div>
+        <div class="progress-bar"><div id="prog-data" class="progress-fill fill-success" style="width: 100%"></div></div>
+      </div>
+    </section>
+
+    <!-- Main Content Layout -->
+    <main class="main-layout">
+      <!-- Left Column: Clinical Units & Flow Bottlenecks -->
+      <div class="left-column">
+        <!-- Units Bed Matrix -->
+        <section class="card">
+          <div class="card-header">
+            <h2>🏥 Unit-by-Unit Capacity & Staffing Status</h2>
+            <span class="pill">Real-time Census</span>
+          </div>
+          <div class="units-grid" id="units-container">
+            <!-- Populated via app.js -->
+          </div>
+        </section>
+
+        <!-- Bottlenecks & Operational Alerts -->
+        <section class="card">
+          <div class="card-header">
+            <h2>⚠️ Active Flow Bottlenecks & Safety Warnings</h2>
+            <span class="pill pill-warning" id="bottleneck-count">0 Detected</span>
+          </div>
+          <div class="bottleneck-list" id="bottlenecks-container">
+            <!-- Populated via app.js -->
+          </div>
+        </section>
+
+        <!-- Collaborative Proposals & Consensus Voting -->
+        <section class="card">
+          <div class="card-header">
+            <h2>🤝 Multi-Agent Strategic Proposals & Consensus Voting</h2>
+            <span class="pill pill-info" id="proposal-count">0 Active</span>
+          </div>
+          <div class="proposals-list" id="proposals-container">
+            <!-- Populated via app.js -->
+          </div>
+        </section>
+
+        <!-- Before / After Impact Benchmark -->
+        <section class="card" id="impact-section" style="display: none;">
+          <div class="card-header">
+            <h2>📊 AI Optimization Impact Benchmark (Before vs. After)</h2>
+            <span class="pill pill-success">Verified Resolution</span>
+          </div>
+          <div id="impact-container">
+            <!-- Populated via app.js -->
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Multi-Agent Comms, Thoughts & Stress Scenarios -->
+      <div class="right-column">
+        <!-- Stress Scenarios Injector -->
+        <section class="card scenario-card">
+          <div class="card-header">
+            <h2>🧪 Stress Testing & Scenario Simulator</h2>
+          </div>
+          <p class="section-desc">Inject live operational shocks to evaluate multi-agent resilience:</p>
+          <div class="scenario-buttons">
+            <button class="btn btn-scenario" onclick="triggerScenario('surge')">
+              <span class="scen-icon">🌊</span>
+              <div>
+                <strong>Winter Viral Surge</strong>
+                <small>+25 acute ED arrivals</small>
+              </div>
+            </button>
+            <button class="btn btn-scenario" onclick="triggerScenario('staffing_callout')">
+              <span class="scen-icon">📉</span>
+              <div>
+                <strong>Shift Staffing Deficit</strong>
+                <small>6 nurse sudden call-outs</small>
+              </div>
+            </button>
+            <button class="btn btn-scenario" onclick="triggerScenario('mass_casualty')">
+              <span class="scen-icon">🚨</span>
+              <div>
+                <strong>Mass Casualty Incident</strong>
+                <small>18 trauma Code Red arrivals</small>
+              </div>
+            </button>
+            <button class="btn btn-scenario-outline" onclick="triggerScenario('reset')">
+              🔄 Reset to Baseline
+            </button>
+          </div>
+        </section>
+
+        <!-- Multi-Agent Live Message Stream -->
+        <section class="card">
+          <div class="card-header">
+            <h2>💬 Agent Communication Bus (ACP v1.0)</h2>
+            <span class="pill">Structured Protocol</span>
+          </div>
+          <div class="message-feed" id="message-feed">
+            <!-- Populated via app.js -->
+          </div>
+        </section>
+
+        <!-- Agent Internal Reasoning (Cognitive Trace) -->
+        <section class="card">
+          <div class="card-header">
+            <h2>🧠 Agent Cognitive State & Decision Audit</h2>
+          </div>
+          <div class="agents-thought-list" id="agent-thoughts-container">
+            <!-- Populated via app.js -->
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "scenario_id": "03_icu_exit_block_crisis",
+  "name": "Critical Care Exit Block Crisis",
+  "description": "MICU and SICU reach 100% saturation. Stable step-down candidates are blocked because Step-Down and Med-Surg wards are completely full.",
+  "icu_occupancy_pct": 100.0,
+  "stepdown_blocked_count": 6,
+  "available_icu_beds": 0,
+  "hics_expected_level": "ORANGE_DIVERT",
+  "key_bottlenecks": [
+    "BN_ICU_EXIT_BLOCK",
+    "BN_DISCHARGE_FRICTION"
+  ]
+}

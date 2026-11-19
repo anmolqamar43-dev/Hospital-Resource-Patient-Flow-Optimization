@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital Resource & Patient Flow Optimization - Autonomous Multi-Agent Command Center</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Command Center Navigation Bar -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-box">🏥</div>
+        <div>
+          <div class="header-title-row">
+            <h1>MetroHealth Academic Medical Center</h1>
+            <span class="sub-pill">Tertiary Care Facility &bull; 450 Beds</span>
+            <!-- Live LLM / API Key Status Badge -->
+            <span id="llm-status-pill" class="llm-badge" title="Configure API key in .env file">
+              <span class="pulse-dot"></span>
+              <span id="llm-provider-text">Loading API config...</span>
+            </span>
+          </div>
+          <p class="subtitle">Autonomous Multi-Agent Patient Flow, ICU Capacity & Resource Allocation Command Center</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="hics-status-card">
+          <span class="hics-label">HICS Operational Posture</span>
+          <span id="hics-badge" class="badge badge-normal">NORMAL</span>
+        </div>
+        <div class="meta-pill">
+          <span class="meta-title">Cycle</span>
+          <span id="cycle-num" class="meta-val">1</span>
+        </div>
+        <div class="meta-pill">
+          <span class="meta-title">Clock</span>
+          <span id="sim-clock" class="meta-val">12:00:00</span>
+        </div>
+        <div class="action-btn-group">
+          <!-- Live Auto-Pilot Toggle Button -->
+          <button id="btn-live-toggle" class="btn btn-live" title="Toggle real-time autonomous agent loop">
+            <span class="live-record-dot"></span> <span id="live-toggle-text">▶ Start Live Agent Flow</span>
+          </button>
+          <button id="btn-step" class="btn btn-secondary" title="Execute one sense-think-collaborate-act agent cycle">
+            ⚡ Step Cycle
+          </button>
+          <button id="btn-optimize" class="btn btn-primary" title="Execute synchronized reverse triage and bed pull optimizations">
+            🚀 Apply AI Flow Optimizations
+          </button>
+          <button id="btn-open-copilot" class="btn btn-chat-header" title="Open Operations Copilot Chatbot">
+            💬 Operations Copilot
+          </button>
+          <button id="btn-api-modal" class="btn btn-outline" title="View or configure API keys from .env">
+            🔑 .env API Key
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- API Key Notice Banner (Dismissible) -->
+    <div class="api-key-banner" id="api-key-banner">
+      <div class="api-banner-content">
+        <span class="api-banner-icon">🔑</span>
+        <div>
+          <strong>Environment API Key Configuration:</strong>
+          <span id="api-banner-text">Loading .env settings...</span>
+          <span class="api-banner-tip">Edit the <code>.env</code> file in the project root to set <code>GEMINI_API_KEY</code> for live LLM reasoning.</span>
+        </div>
+      </div>
+      <button class="btn-sm btn-outline" id="btn-configure-key">Configure Key</button>
+    </div>
+
+    <!-- LIVE MULTI-AGENT OPERATIONS ARENA (Minimum 2 Agents Performing Live) -->
+    <section class="live-arena-panel">
+      <div class="arena-header">
+        <div class="arena-title-row">
+          <span class="arena-pulse-indicator"></span>
+          <h2>⚡ Live Multi-Agent Operations Arena</h2>
+          <span class="arena-badge">Dual-Agent Live Workstation</span>
+        </div>
+        <div class="arena-controls">
+          <span class="arena-live-label" id="arena-live-label">Status: Standing By</span>
+          <div class="speed-selector">
+            <span class="speed-label">Speed:</span>
+            <button class="speed-btn active" data-speed="4000">1x (4s)</button>
+            <button class="speed-btn" data-speed="2500">2x (2.5s)</button>
+            <button class="speed-btn" data-speed="1200">3x (1.2s)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="live-agents-grid">
+        <!-- LIVE AGENT 1: ED Triage & Influx Forecaster -->
+        <div class="agent-workstation-card" id="agent-card-triage">
+          <div class="agent-card-top">
+            <div class="agent-avatar-wrap">
+              <span class="agent-avatar">🚑</span>
+              <div>
+                <div class="agent-name">ED Triage & Influx Forecaster</div>
+                <div class="agent-role-sub">Emergency Flow Specialist &bull; Hallway Boarding Guard</div>
+              </div>
+            </div>
+            <div class="agent-status-tag" id="triage-status-tag">ACTIVE</div>
+          </div>
+
+          <div class="agent-task-banner">
+            <div class="task-label">Active Task:</div>
+            <div class="task-description" id="triage-active-task">Auditing emergency arrivals and triage acuity (ESI 1-5)...</div>
+          </div>
+
+          <div class="agent-progress-row">
+            <span class="progress-label">Task Progress:</span>
+            <span class="progress-val" id="triage-prog-val">50%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill fill-warning" id="triage-prog-fill" style="width: 50%"></div>
+          </div>
+
+          <div class="agent-terminal-header">
+            <span>Terminal Workstation Log</span>
+            <span class="target-unit" id="triage-target-unit">🎯 Unit: Emergency Dept</span>
+          </div>
+          <div class="agent-terminal" id="triage-terminal">
+            <div class="term-line">[Ready] ED Triage Forecaster monitoring arrivals.</div>
+          </div>
+
+          <div class="agent-card-actions">
+            <button class="btn btn-sm btn-secondary" onclick="triggerSingleAgent('triage_influx_agent')">
+              ⚡ Execute ED Triage Task Live
+            </button>
+            <span class="agent-stat" id="triage-stat">Boarders: <strong>--</strong></span>
+          </div>
+        </div>
+
+        <!-- Collaborative Live Pipeline Wire -->
+        <div class="pipeline-connector">
+          <div class="pipeline-wire">
+            <div class="packet packet-left-to-right" id="packet-anim"></div>
+          </div>
+          <span class="pipeline-label">ACP v1.0 Negotiation Wire</span>
+        </div>
+
+        <!-- LIVE AGENT 2: ICU Critical Care Capacity Manager -->
+        <div class="agent-workstation-card" id="agent-card-icu">
+          <div class="agent-card-top">
+            <div class="agent-avatar-wrap">
+              <span class="agent-avatar">🫀</span>
+              <div>
+                <div class="agent-name">ICU & Critical Care Manager</div>
+                <div class="agent-role-sub">Critical Care Specialist &bull; Step-Down Evaluator</div>
+              </div>
+            </div>
+            <div class="agent-status-tag" id="icu-status-tag">ACTIVE</div>
+          </div>
+
+          <div class="agent-task-banner">
+            <div class="task-label">Active Task:</div>
+            <div class="task-description" id="icu-active-task">Evaluating step-down readiness (SOFA &le; 3, extubation, hemodynamics)...</div>
+          </div>
+
+          <div class="agent-progress-row">
+            <span class="progress-label">Task Progress:</span>
+            <span class="progress-val" id="icu-prog-val">60%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill fill-danger" id="icu-prog-fill" style="width: 60%"></div>
+          </div>
+
+          <div class="agent-terminal-header">
+            <span>Terminal Workstation Log</span>
+            <span class="target-unit" id="icu-target-unit">🎯 Unit: MICU & SICU</span>
+          </div>
+          <div class="agent-terminal" id="icu-terminal">
+            <div class="term-line">[Ready] ICU Capacity Manager monitoring ventilators & reserves.</div>
+          </div>
+
+          <div class="agent-card-actions">
+            <button class="btn btn-sm btn-secondary" onclick="triggerSingleAgent('icu_capacity_agent')">
+              ⚡ Execute ICU Audit Task Live
+            </button>
+            <span class="agent-stat" id="icu-stat">Step-Down Ready: <strong>--</strong></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Key Operational Performance Indicators (KPIs) -->
+    <section class="kpi-grid">
+      <!-- 1. Total Occupancy -->
+      <div class="kpi-card" id="card-kpi-overall">
+        <div class="kpi-header">
+          <span>Overall Hospital Census</span>
+          <span class="kpi-icon">🛏️</span>
+        </div>
+        <div class="kpi-main">
+          <span class="kpi-value" id="kpi-overall-occ">--%</span>
+          <span class="kpi-trend" id="kpi-overall-trend">Normal Range</span>
+        </div>
+        <div class="kpi-subtext" id="kpi-overall-beds">-- / 450 Beds Occupied</div>
+        <div class="progress-bar">
+          <div id="prog-overall" class="progress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- 2. Critical Care Capacity -->
+      <div class="kpi-card" id="card-kpi-icu">
+        <div class="kpi-header">
+          <span>Critical Care (ICU) Saturation</span>
+          <span class="kpi-icon">🫀</span>
+        </div>
+        <div class="kpi-main">
+          <span class="kpi-value" id="kpi-icu-occ">--%</span>
+          <span class="kpi-trend danger-text" id="kpi-icu-reserve">Reserve: -- beds</span>
+        </div>
+        <div class="kpi-subtext" id="kpi-icu-details">-- / 40 ICU Beds | Step-Down Eligible: <strong id="kpi-icu-ready">0</strong></div>
+        <div class="progress-bar">
+          <div id="prog-icu" class="progress-fill fill-danger" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- 3. ED Boarding Queue -->
+      <div class="kpi-card" id="card-kpi-ed">
+        <div class="kpi-header">
+          <span>Emergency Boarding Queue</span>
+          <span class="kpi-icon">🚑</span>
+        </div>
+        <div class="kpi-main">
+          <span class="kpi-value" id="kpi-ed-boarders">0</span>
+          <span class="kpi-trend warning-text" id="kpi-ed-status">Normal Intake</span>
+        </div>
+        <div class="kpi-subtext" id="kpi-ed-wait">Mean Boarding Wait: 0.0 hrs</div>
+        <div class="progress-bar">
+          <div id="prog-ed" class="progress-fill fill-warning" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- 4. Staffing Ratios -->
+      <div class="kpi-card" id="card-kpi-staff">
+        <div class="kpi-header">
+          <span>Nurse Staffing Mandates</span>
+          <span class="kpi-icon">👩‍⚕️</span>
+        </div>
+        <div class="kpi-main">
+          <span class="kpi-value" id="kpi-staff-status">COMPLIANT</span>
+          <span class="kpi-trend success-text" id="kpi-staff-trend">Title 22 Safe</span>
+        </div>
+        <div class="kpi-subtext" id="kpi-staff-details">Nurses: -- | Avg Fatigue: --%</div>
+        <div class="progress-bar">
+          <div id="prog-staff" class="progress-fill fill-success" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- 5. Ventilators & Critical Assets -->
+      <div class="kpi-card" id="card-kpi-vent">
+        <div class="kpi-header">
+          <span>Mechanical Ventilators</span>
+          <span class="kpi-icon">🫁</span>
+        </div>
+        <div class="kpi-main">
+          <span class="kpi-value" id="kpi-vent-occ">--%</span>
+          <span class="kpi-trend" id="kpi-vent-avail">-- Avail</span>
+        </div>
+        <div class="kpi-subtext" id="kpi-vent-details">-- / 40 In Use (4 Reserved)</div>
+        <div class="progress-bar">
+          <div id="prog-vent" class="progress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- 6. Data Integrity & Completeness -->
+      <div class="kpi-card" id="card-kpi-data">
+        <div class="kpi-header">
+          <span>Data Completeness & Audit</span>
+          <span class="kpi-icon">🛡️</span>
+        </div>
+        <div class="kpi-main">
+          <span class="kpi-value" id="kpi-data-comp">--%</span>
+          <span class="kpi-trend success-text" id="kpi-data-auditor">Auditor Active</span>
+        </div>
+        <div class="kpi-subtext" id="kpi-data-details">Conservative clinical safety bound</div>
+        <div class="progress-bar">
+          <div id="prog-data" class="progress-fill fill-success" style="width: 100%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Command Center Layout -->
+    <main class="main-grid">
+      <!-- Left Column (67% width) -->
+      <div class="col-left">
+        <!-- Unit-by-Unit Bed Matrix -->
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h2>🏥 Departmental Capacity & Bed Matrix</h2>
+              <span class="panel-badge">8 Units &bull; 450 Physical Beds</span>
+            </div>
+            <div class="unit-legend">
+              <span class="legend-item"><span class="dot dot-avail"></span> Available</span>
+              <span class="legend-item"><span class="dot dot-occ"></span> Occupied</span>
+              <span class="legend-item"><span class="dot dot-clean"></span> Cleaning</span>
+              <span class="legend-item"><span class="dot dot-block"></span> Blocked</span>
+            </div>
+          </div>
+          <div class="units-container" id="units-container">
+            <!-- Populated dynamically via app.js -->
+          </div>
+        </section>
+
+        <!-- Active Flow Bottlenecks & Diagnostics -->
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h2>⚠️ Operational Flow Bottlenecks & Safety Warnings</h2>
+              <span id="bottleneck-count" class="panel-badge badge-warning">0 Detected</span>
+            </div>
+            <span class="panel-sub">Real-time root-cause analysis</span>
+          </div>
+          <div class="bottleneck-list" id="bottlenecks-container">
+            <!-- Populated dynamically via app.js -->
+          </div>
+        </section>
+
+        <!-- Strategic Proposals & Consensus Voting -->
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h2>🤝 Autonomous Multi-Agent Proposals & Peer Consensus</h2>
+              <span id="proposal-count" class="panel-badge badge-info">0 Formulated</span>
+            </div>
+            <span class="panel-sub">Collaborative multi-round arbitration</span>
+          </div>
+          <div class="proposals-list" id="proposals-container">
+            <!-- Populated dynamically via app.js -->
+          </div>
+        </section>
+
+        <!-- Dynamic Before vs. After Impact Benchmark -->
+        <section class="panel impact-panel" id="impact-panel" style="display: none;">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h2>📊 AI Optimization Impact Benchmark (Before vs. After)</h2>
+              <span class="panel-badge badge-success">Verified Resolution</span>
+            </div>
+            <span class="panel-sub">Synchronized reverse triage & workforce balancing</span>
+          </div>
+          <div class="impact-table-wrapper" id="impact-container">
+            <!-- Populated dynamically via app.js -->
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column (33% width) -->
+      <div class="col-right">
+        <!-- Stress Testing & Scenario Simulator -->
+        <section class="panel scenario-panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h2>🧪 Stress Testing & Scenario Injector</h2>
+            </div>
+            <span class="panel-sub">Test resilience under shock</span>
+          </div>
+          <p class="scenario-intro">Inject operational disruptions to evaluate multi-agent collaborative adaptation:</p>
+          <div class="scenario-grid">
+            <button class="scenario-btn" onclick="triggerScenario('surge')">
+              <span class="scen-icon">🌊</span>
+              <div class="scen-meta">
+                <strong>Winter Viral Surge</strong>
+                <small>+25 acute ED arrivals with respiratory distress</small>
+              </div>
+            </button>
+            <button class="scenario-btn" onclick="triggerScenario('staffing_callout')">
+              <span class="scen-icon">📉</span>
+              <div class="scen-meta">
+                <strong>Shift Staffing Shortage</strong>
+                <small>6 nurse sudden call-outs causing ratio breach</small>
+              </div>
+            </button>
+            <button class="scenario-btn" onclick="triggerScenario('mass_casualty')">
+              <span class="scen-icon">🚨</span>
+              <div class="scen-meta">
+                <strong>Mass Casualty Incident (MCI)</strong>
+                <small>18 polytrauma Code Red arrivals</small>
+              </div>
+            </button>
+            <button class="scenario-btn reset-btn" onclick="triggerScenario('reset')">
+              🔄 Reset to Baseline Operations (80% Normal Census)
+            </button>
+          </div>
+        </section>
+
+        <!-- Real-Time Agent Communication Protocol (ACP v1.0) Feed -->
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h2>💬 Agent Communication Bus</h2>
+              <span class="panel-badge badge-mono">ACP v1.0</span>
+            </div>
+            <span class="panel-sub">Structured message stream</span>
+          </div>
+          <div class="message-feed" id="message-feed">
+            <!-- Populated dynamically via app.js -->
+          </div>
+        </section>
+
+        <!-- Agent Cognitive State & Inner Thoughts -->
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h2>🧠 Agent Cognitive State & Reasoning Trace</h2>
+            </div>
+            <span class="panel-sub">Sense-Think-Act audit</span>
+          </div>
+          <div class="agents-thought-list" id="agent-thoughts-container">
+            <!-- Populated dynamically via app.js -->
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- API Key Configuration Modal -->
+    <div class="modal-overlay" id="api-modal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>🔑 Configure LLM API Key (.env)</h3>
+          <button class="modal-close" id="btn-close-modal">&times;</button>
+        </div>
+        <p class="modal-desc">
+          Add your Google Gemini API key or OpenAI API key. The key is stored in your local <code>.env</code> file for live agent reasoning.
+        </p>
+        <div class="form-group">
+          <label for="input-gemini-key">Google Gemini API Key (Recommended):</label>
+          <input type="password" id="input-gemini-key" placeholder="AIzaSy..." class="input-text">
+          <small class="form-help">Get a free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #38bdf8;">Google AI Studio</a>.</small>
+        </div>
+        <div class="form-group">
+          <label for="input-openai-key">OpenAI API Key (Alternative):</label>
+          <input type="password" id="input-openai-key" placeholder="sk-..." class="input-text">
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="btn-cancel-modal">Cancel</button>
+          <button class="btn btn-primary" id="btn-save-key">Save & Connect API</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Operations Copilot Chatbot -->
+    <div class="floating-chat-launcher" id="btn-floating-chat" title="Open AI Operations Copilot">
+      <span class="chat-launcher-icon">💬</span>
+      <span class="chat-launcher-label">Operations Copilot</span>
+      <span class="chat-status-dot"></span>
+    </div>
+
+    <!-- Operations Copilot Chatbot Window -->
+    <div class="chatbot-drawer" id="chatbot-drawer" style="display: none;">
+      <div class="chatbot-header">
+        <div class="copilot-profile">
+          <div class="copilot-avatar">🤖</div>
+          <div>
+            <div class="copilot-title-row">
+              <h4>Operations & Flow Copilot</h4>
+              <span class="copilot-badge" id="copilot-badge">AI Assistant</span>
+            </div>
+            <p class="copilot-sub">Real-Time Clinical Decision Support & Multi-Agent Commands</p>
+          </div>
+        </div>
+        <div class="copilot-header-actions">
+          <button class="copilot-action-btn" id="btn-clear-chat" title="Clear conversation">&circlearrowright;</button>
+          <button class="copilot-action-btn" id="btn-close-chat" title="Minimize Copilot">&times;</button>
+        </div>
+      </div>
+
+      <!-- Quick Prompt Suggestions -->
+      <div class="quick-prompts-bar">
+        <button class="quick-pill" onclick="sendQuickPrompt('Give me a full operational status briefing')">📊 Status Briefing</button>
+        <button class="quick-pill" onclick="sendQuickPrompt('What is our ICU capacity and who are the step-down candidates?')">🫀 ICU Step-Down</button>
+        <button class="quick-pill" onclick="sendQuickPrompt('How many patients are boarding in the ED?')">🚑 ED Boarders</button>
+        <button class="quick-pill" onclick="sendQuickPrompt('Are any units violating nurse staffing ratios?')">👩‍⚕️ Nurse Ratios</button>
+        <button class="quick-pill quick-pill-primary" onclick="sendQuickPrompt('Apply flow optimizations now')">🚀 Apply Optimizations</button>
+      </div>
+
+      <!-- Messages Stream -->
+      <div class="chat-messages-container" id="chat-messages">
+        <!-- Initial Welcome Message from Copilot -->
+        <div class="chat-msg msg-assistant">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-body">
+            <div class="msg-author">Operations Copilot <span class="msg-time">Just now</span></div>
+            <div class="msg-text">
+              👋 <strong>Hello! I am your Clinical Flow & Operations Copilot.</strong><br><br>
+              I am connected to MetroHealth's 450-bed ground truth state and all 6 autonomous agents. You can ask me real-time questions, investigate unit bottlenecks, or tell me to execute flow optimizations:
+              <ul style="margin: 6px 0 0 16px; font-size: 11px;">
+                <li><em>"What is our ICU reserve margin?"</em></li>
+                <li><em>"Which units have nurse staffing ratio breaches?"</em></li>
+                <li><em>"Apply flow optimizations"</em> (to clear boarders & decompress ICU)</li>
+                <li><em>"Simulate winter surge"</em> (to test intake stress)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <form class="chat-input-area" id="chat-form" onsubmit="event.preventDefault(); submitChatMessage();">
+        <input 
+          type="text" 
+          id="chat-input" 
+          placeholder="Ask Copilot or type 'apply optimizations'..." 
+          class="chat-input" 
+          autocomplete="off"
+        >
+        <button type="submit" class="btn-send" id="btn-send-chat" title="Send message">
+          <span>➤</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div>MetroHealth Autonomous Multi-Agent Operations System &bull; Version 2.5.0</div>
+      <div>Equipped with Live Agent Representation & Dual-Workstation Terminal Stream</div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

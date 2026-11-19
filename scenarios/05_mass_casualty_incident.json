@@ -1,0 +1,14 @@
+{
+  "scenario_id": "05_mass_casualty_incident",
+  "name": "Mass Casualty Incident (MCI) Code Red",
+  "description": "Highway multi-vehicle catastrophic collision yielding 20 blunt trauma victims requiring immediate resuscitation, emergent OR, and ICU beds.",
+  "trauma_arrivals": 20,
+  "ventilator_draw": 10,
+  "icu_demand": 12,
+  "hics_expected_level": "RED_CRISIS",
+  "key_bottlenecks": [
+    "BN_ED_BOARDING",
+    "BN_ICU_EXIT_BLOCK",
+    "BN_VENTILATOR_SHORTAGE"
+  ]
+}

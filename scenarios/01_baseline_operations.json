@@ -1,0 +1,10 @@
+{
+  "scenario_id": "01_baseline_operations",
+  "name": "Standard Operational Baseline",
+  "description": "Hospital operating under typical weekday volumes with moderate occupancy and stable staffing.",
+  "target_occupancy_pct": 82.0,
+  "icu_occupancy_pct": 80.0,
+  "ed_boarding_target": 2,
+  "staffing_ratio_compliance": "COMPLIANT",
+  "hics_expected_level": "NORMAL"
+}

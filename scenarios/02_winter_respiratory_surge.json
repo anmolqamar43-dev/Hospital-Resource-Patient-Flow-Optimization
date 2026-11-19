@@ -1,0 +1,14 @@
+{
+  "scenario_id": "02_winter_respiratory_surge",
+  "name": "Winter Respiratory Epidemic Surge",
+  "description": "Seasonal influx of Influenza, COVID-19, and RSV causing sharp rise in acute respiratory distress and ward boarding.",
+  "ed_influx_spike_count": 25,
+  "ventilator_demand_surge": 6,
+  "icu_occupancy_pct": 92.5,
+  "ed_boarding_target": 12,
+  "hics_expected_level": "YELLOW_SURGE",
+  "key_bottlenecks": [
+    "BN_ED_BOARDING",
+    "BN_VENTILATOR_SHORTAGE"
+  ]
+}
